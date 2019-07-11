@@ -1,7 +1,5 @@
 package ru.ignios.calc.utilities;
 
-
-
 import java.util.Optional;
 
 public class AnnuityCalculator {
