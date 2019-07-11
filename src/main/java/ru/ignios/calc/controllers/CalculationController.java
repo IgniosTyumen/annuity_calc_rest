@@ -1,30 +1,44 @@
 package ru.ignios.calc.controllers;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.ignios.calc.dto.CalculationResult;
+import ru.ignios.calc.dto.InputDTO;
 import ru.ignios.calc.utilities.AnnuityCalculator;
 
+import javax.validation.Valid;
+
+
 @RestController
+@Validated
 public class CalculationController {
 
-    @GetMapping(value = "/calc", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
+    }
 
+    @PostMapping(value = "/calc", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> calculateAnnuityPayment(
-            @RequestParam
-                    Integer creditSummary,
+            @RequestBody
+                    @Valid
+                    InputDTO input
 
-            @RequestParam
-                    Double interestRate,
-
-            @RequestParam
-                    Integer creditTerm
     ) {
-        return
-        ResponseEntity.ok()
-                .body(AnnuityCalculator.calcMonthlyPayment(creditSummary, interestRate, creditTerm ));
+        System.out.println(input);
+       Double resultOfCalculation = AnnuityCalculator.calcMonthlyPayment(input.getCreditSummary(), input.getInterestRate(), input.getCreditTerm())
+                .orElseThrow(() -> new RuntimeException());
+
+        return ResponseEntity.ok()
+                .body(
+                        new CalculationResult(resultOfCalculation)
+                );
 
     }
 }
