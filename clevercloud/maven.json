@@ -1,7 +1,6 @@
 {
   "build": {
-    "type": "maven",
-    "goal": "assemble"
+    "type": "maven"
   },
   "deploy": {
     "goal": "./build/libs/backend_test_task"
